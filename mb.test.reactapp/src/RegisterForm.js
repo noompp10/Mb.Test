@@ -1,3 +1,4 @@
+import moment from 'moment'
 import React, { Component } from 'react';
 
 class RegisterForm extends Component {
@@ -30,6 +31,31 @@ class RegisterForm extends Component {
     onFormSubmit = (event) => {
         event.preventDefault();
 
+
+        //validate data
+        if (this.state.userType == 1) {
+            if (this.state.personCardID == '') {
+                alert('Card ID is required for Person')
+                return;
+            }
+
+            if (this.state.personDOB == '') {
+                alert('Date of Birth is required for Person')
+                return;
+            }
+        } else if (this.state.userType == 2) {
+            if (this.state.companyTaxID == '') {
+                alert('Tax ID is required for Company')
+                return;
+            }
+
+            if (this.state.companyContactPerson == '') {
+                alert('Contact Person is required for Company')
+                return;
+            }
+        }
+
+
         let userInfo = {
             "id": 0,
             "userType": parseInt(this.state.userType),
@@ -55,9 +81,8 @@ class RegisterForm extends Component {
             body: JSON.stringify(userInfo)
         }).then(r => r.json()).then(res => {
             console.log(res)
-            if (res) {
-                this.setState({ message: 'User has been successfully created' });
-                this.setState({ id: res.id });
+            if (res && res.message == '') {
+
                 alert('Succefully registered')
 
                 event.target.reset();
@@ -67,6 +92,8 @@ class RegisterForm extends Component {
                         this.setState({ users: result })
                     }
                 )
+            } else {
+                alert(res.message)
             }
         });
     }
@@ -99,29 +126,29 @@ class RegisterForm extends Component {
     render() {
         return (
             <div>
-                <h4 class="mb-3">Registration form</h4>
+                <h4 className="mb-3">Registration form</h4>
                 <form className="row g-3" onSubmit={this.onFormSubmit}>
 
                     <div className="col-sm-6">
                         <label htmlFor="name" className="form-label">Name</label>
-                        <input type="text" className="form-control" id="name" name="name" onChange={this.onFormChange} required />
+                        <input type="text" className="form-control" id="name" name="name" onChange={this.onFormChange} required maxLength="100" />
                     </div>
 
                     <div className="col-sm-6">
                         <label htmlFor="surname" className="form-label">Surname</label>
-                        <input type="text" className="form-control" id="surname" name="surname" onChange={this.onFormChange} required />
+                        <input type="text" className="form-control" id="surname" name="surname" onChange={this.onFormChange} required maxLength="100" />
                     </div>
                     <div className="col-sm-12">
                         <label htmlFor="email" className="form-label">Email</label>
-                        <input type="text" className="form-control" id="email" name="email" onChange={this.onFormChange} required />
+                        <input type="email" className="form-control" id="email" name="email" onChange={this.onFormChange} required maxLength="100" />
                     </div>
                     <div className="col-sm-12">
                         <label htmlFor="address" className="form-label">Address</label>
-                        <input type="text" className="form-control" id="address" name="address" onChange={this.onFormChange} required />
+                        <input type="text" className="form-control" id="address" name="address" onChange={this.onFormChange} required maxLength="1000" />
                     </div>
                     <div className="col-sm-7">
                         <label htmlFor="telephone" className="form-label">Telephone</label>
-                        <input type="text" className="form-control" id="telephone" name="telephone" onChange={this.onFormChange} required />
+                        <input type="number" className="form-control" id="telephone" name="telephone" onChange={this.onFormChange} required maxLength="10" />
                     </div>
 
                     <div className="col-sm-7">
@@ -133,36 +160,32 @@ class RegisterForm extends Component {
                         </select>
                     </div>
 
-
                     <div className={this.state.tmpCssPerson}>
                         <label htmlFor="personCardID" className="form-label">Card ID</label>
-                        <input type="text" className="form-control" id="personCardID" name="personCardID" onChange={this.onFormChange} />
+                        <input type="number" className="form-control" id="personCardID" name="personCardID" onChange={this.onFormChange} maxLength="100" />
                     </div>
-
                     <div className={this.state.tmpCssPerson}>
                         <label htmlFor="personDOB" className="form-label">Date of Birth</label>
                         <input type="date" className="form-control" id="personDOB" name="personDOB" onChange={this.onFormChange} />
                     </div>
 
-
                     <div className={this.state.tmpCssCompany}>
                         <label htmlFor="companyTaxID" className="form-label">Tax ID</label>
-                        <input type="text" className="form-control" id="companyTaxID" name="companyTaxID" onChange={this.onFormChange} />
+                        <input type="number" className="form-control" id="companyTaxID" name="companyTaxID" onChange={this.onFormChange} maxLength="20" />
                     </div>
-
                     <div className={this.state.tmpCssCompany}>
                         <label htmlFor="companyContactPerson" className="form-label">Contact Person</label>
-                        <input type="text" className="form-control" id="companyContactPerson" name="companyContactPerson" onChange={this.onFormChange} />
+                        <input type="text" className="form-control" id="companyContactPerson" name="companyContactPerson" onChange={this.onFormChange} maxLength="100" />
                     </div>
 
-                    <hr class="my-4" />
+                    <hr className="my-4" />
                     <div className="col-12">
                         <button className="btn btn-primary w-100 btn-lg" type="submit">Submit</button>
                     </div>
                 </form>
                 <hr></hr>
 
-                <h4 class="mb-3">All Registered users</h4>
+                <h4 className="mb-3">All Registered users</h4>
                 <div className="table-responsive">
                     <table className="table table-sm">
                         <thead>
@@ -184,14 +207,14 @@ class RegisterForm extends Component {
                             {this.state.users.map(u => (
                                 <tr key={u.id}>
                                     <td>{u.name}</td>
-                                    <td>{u.userType}</td>
+                                    <td>{u.userType ==1 ? "Person": "Company"}</td>
                                     <td>{u.name}</td>
                                     <td>{u.surname}</td>
                                     <td>{u.email}</td>
                                     <td>{u.address}</td>
                                     <td>{u.telephone}</td>
                                     <td>{u.personCardID}</td>
-                                    <td>{u.personDOB}</td>
+                                    <td>{u.personDOB == null? "":moment(u.personDOB).format("DD/MM/YYYY")}</td>
                                     <td>{u.companyTaxID}</td>
                                     <td>{u.companyContactPerson}</td>
                                 </tr>

@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Mb.Test.WebApi.Models
 {
@@ -8,6 +7,7 @@ namespace Mb.Test.WebApi.Models
         public MbTestContext(DbContextOptions<MbTestContext> options)
             : base(options)
         {
+            Database.EnsureCreated();
         }
 
         public DbSet<User> Users { get; set; } = null!;
